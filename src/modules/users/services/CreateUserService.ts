@@ -5,13 +5,14 @@ interface IUserRequest {
     name: string,
     email: string,
     password: string
+    role?: string
 }
 
 export class CreateUserService {
     constructor() {
         
     }
-    async execute( {name, email, password}: IUserRequest) {
+    async execute( {name, email, password, role}: IUserRequest) {
         //Verificação de duplicidade de emails 
         const userExists = await prisma.user.findUnique({ // Procura um email exatamente igual no banco de dados, se estiver cria o userExists
             where: { email } // Foi usado o await pois assim o codigo só continua se o banco de dados devolver a informação que foi pedida
@@ -30,6 +31,7 @@ export class CreateUserService {
                 name, 
                 email,
                 password: hashedPassword,
+                role: role || "USER"
                 // O role vai ser o padrão User que foi configurado no Schema.prisma
             },
         });

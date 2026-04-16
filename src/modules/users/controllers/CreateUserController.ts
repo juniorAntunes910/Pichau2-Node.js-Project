@@ -8,16 +8,18 @@ export class CreateUserController {
         const userSchema = z.object({
             name: z.string().min(3, "O nome precisa de pelo menos 3 caracteres"),
             email: z.string().email("Formato de email invalido"),
-            password: z.string().min(6, "A senha deve conter no minimo 6 caracteres")
+            password: z.string().min(6, "A senha deve conter no minimo 6 caracteres"),
+            role: z.string().optional()
         })
 
         try{
-        const { name, email, password } = userSchema.parse(req.body); // Coleta do Req 
+        const { name, email, password, role} = userSchema.parse(req.body); // Coleta do Req 
         const service = new CreateUserService(); // instancia o service
         const user = await service.execute( { 
             name,
             email,
-            password
+            password,
+            role
         })
         return res.status(201).json(user);
         } catch(error) { // Tratar o erro da forma correta e utilizar o zod
