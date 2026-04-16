@@ -28,8 +28,22 @@ export class AutenticateUserService {
                 role: user.role, // Guardando o cargo/role dele no token
                 name: user.name // Guarda o nome pra facilitar no front 
             },
-            
-        )
+            process.env.JWT_SECRET as string,
+            {
+                subject: user.id,
+                expiresIn: '1d'
+            }
+        );
+
+        return {
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            },
+            token
+        };
 
     }
 }
