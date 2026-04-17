@@ -74,8 +74,8 @@ Siga os passos abaixo para testar este projeto em sua própria máquina:
 
 **1. Clone o repositório:**
 ```bash
-git clone https://github.com/juniorAntunes910/Pichau2-node.js.git
-cd Pichau2-node.js
+git clone https://github.com/juniorAntunes910/NexusStore-Node.js-Project-API
+cd Nexusstore-Node.js-Project-API
 ```
 
 **2. Instale as dependências exigidas:**
