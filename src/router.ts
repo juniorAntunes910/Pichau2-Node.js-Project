@@ -37,5 +37,5 @@ router.delete('/users/:id', ensuereAuthenticated, ensureAdmin, (req, res) => del
 router.post('/products', ensuereAuthenticated, ensureAdmin, (req, res) => createProductController.handle(req, res));
 router.get('/products', ensuereAuthenticated, ensureAdmin, (req, res) =>  readProductController.handle(req, res));
 router.put('/products/:id', ensuereAuthenticated, ensureAdmin, (req, res) => updateProductController.handle(req, res)); 
-router.delete('/products/:id', ensuereAuthenticated, ensureAdmin, (req, res) => deleteProductController.handle(req, res));
+router.delete('/products/:id', ensuereAuthenticated, ensureAdmin, (req, res) => deleteProductController.handle(req, res))
 export { router }

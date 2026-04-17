@@ -1,16 +1,21 @@
 import 'dotenv/config'
 import express from 'express'
 import { router } from './router'
+import swaggerUi from "swagger-ui-express";
+import swaggerFile from "./shared/swagger.json"; 
+
 const app = express();
-app.use(express.json()); // Desta forma o express é avisado que ele vai receber json 
 
+// 1. Middlewares de base (Sempre no topo!)
+app.use(express.json()); 
 
-//Criando a rota post de usuarios
-//agora ele apenas leva para o router
-app.use(router)
+// 2. Documentação (Precisa do app já instanciado e JSON configurado)
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
-
+// 3. Rotas da aplicação
+app.use(router);
 
 app.listen(3000, () => {
-    console.log("Servidor Rodando!")
-})
+    console.log("🚀 Servidor Rodando em http://localhost:3000");
+    console.log("📝 Documentação disponível em http://localhost:3000/api-docs");
+});

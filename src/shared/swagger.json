@@ -1,0 +1,144 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Pichau Clone API",
+    "description": "Backend modularizado para simular um e-commerce de tecnologia, inspirado na Pichau.",
+    "contact": {
+      "email": "jugabriel2612@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de Desenvolvimento"
+    }
+  ],
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Autentica no sistema e retorna o Token JWT",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Token gerado com sucesso" },
+          "401": { "description": "E-mail ou senha incorretos" }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Lista todos os usuários cadastrados",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lista de usuários" }
+        }
+      },
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Cria uma nova conta de usuário",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Usuário criado" }
+        }
+      }
+    },
+    "/users/{id}": {
+      "put": {
+        "tags": ["Usuários"],
+        "summary": "Atualiza dados de um usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Usuário atualizado" } }
+      },
+      "delete": {
+        "tags": ["Usuários"],
+        "summary": "Deleta a conta de um usuário",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Usuário deletado" } }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": ["Produtos"],
+        "summary": "Lista os produtos existentes",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "Lista de produtos" } }
+      },
+      "post": {
+        "tags": ["Produtos"],
+        "summary": "Cria um novo produto no catálogo",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "description": { "type": "string" },
+                  "price": { "type": "number" },
+                  "stock": { "type": "integer" },
+                  "category": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "201": { "description": "Produto criado" } }
+      }
+    },
+    "/products/{id}": {
+      "put": {
+        "tags": ["Produtos"],
+        "summary": "Atualiza os dados de um produto",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Produto atualizado" } }
+      },
+      "delete": {
+        "tags": ["Produtos"],
+        "summary": "Remove um produto do catálogo",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "204": { "description": "Produto removido" } }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
