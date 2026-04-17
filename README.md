@@ -1,4 +1,4 @@
-# 🐦 Pichau2 Node.js Project (Clone X/Twitter)
+# 🛒 Pichau Clone - Node.js Backend
 
 <div align="center">
   <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
@@ -10,18 +10,18 @@
 
 <br>
 
-Um backend altamente estruturado e modularizado, desenvolvido com Node.js e Express, criado para simular o comportamento de uma aplicação de microblogs, inspirado no X (antigo Twitter).
+Um backend altamente estruturado e modularizado, desenvolvido com Node.js e Express, criado para simular o comportamento de um e-commerce gigante de tecnologia e hardware, inspirado na Pichau.
 
 ---
 
 ## 📝 Contexto
 
-Esse projeto foi concebido e criado no intuito de desenvolver uma rede social semelhante ao X (antigo Twitter). O objetivo principal serviu para um aprofundamento prático na criação de **Backends semi-profissionais**. Embora a inspiração estrutural venha de frameworks opinativos modernos, o projeto utiliza uma stack enxuta e poderosa (Node.js + Express) para aplicar na prática conceitos utilizados no desenvolvimento real do mercado.
+Esse projeto foi concebido e criado no intuito de desenvolver o backend de um e-commerce semelhante à Pichau. O objetivo principal é proporcionar um aprofundamento prático na criação de **APIs robustas e semi-profissionais**, focando intensamente em aprimorar os conhecimentos nas tecnologias **Express** e **Prisma ORM**. A ideia é aplicar na prática conceitos utilizados no desenvolvimento real do mercado.
 
 ## 🎯 Objetivo
 
-- Desenvolver um sistema robusto de **Autenticação e Autorização** de usuários (restringindo acessos via tokens e permissões de administrador).
-- Implementar **relacionamentos eficientes** no banco de dados através do ORM Prisma.
+- Desenvolver um sistema estruturado de **Autenticação e Autorização** de clientes e administradores (restringindo acessos via tokens e permissões).
+- Implementar **relacionamentos eficientes** no banco de dados através do ORM Prisma para gerenciar Usuários e Produtos.
 - Garantir a integridade dos dados por meio de **validações de entradas** rigorosas.
 - Aplicar princípios de **SOLID** arquiteturando o software com responsabilidades bem separadas em Controladores, Módulos e Shared Folders.
 
@@ -51,8 +51,7 @@ Rotas que não necessitam de token de acesso.
 | Método | Endpoint | Descrição |
 | :--- | :--- | :--- |
 | `POST` | `/login` | Autentica no sistema e retorna o Token JWT. |
-| `POST` | `/users` | Cria uma nova conta de usuário. |
-| `POST` | `/products` | Cria um produto. |
+| `POST` | `/users` | Cria uma nova conta de usuário para o e-commerce. |
 
 ### 🔒 Rotas Protegidas
 Rotas que precisam que o Token seja passado nos _Headers_ (Bearer Token) e, em muitos casos, que a conta possua privilégios administrativos.
@@ -64,7 +63,8 @@ Rotas que precisam que o Token seja passado nos _Headers_ (Bearer Token) e, em m
 | `DELETE` | `/users/:id` | Deleta a conta de um usuário do sistema. |
 | `GET` | `/products` | Lista os produtos existentes. |
 | `PUT` | `/products/:id` | Atualiza os dados de um produto via ID. |
-| `DELETE`| `/products/:id` | Remove um produto do banco de dados de acordo com o ID. |
+| `POST` | `/products` | Lista a criação de um novo produto do catálogo de hardwares. |
+| `DELETE`| `/products/:id` | Remove um produto do catálogo de acordo com o ID. |
 
 ---
 
