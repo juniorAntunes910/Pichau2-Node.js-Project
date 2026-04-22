@@ -1,19 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../services/api';
 
-// Recebemos o user e setUser para poder mostrar o nome e fazer Logout
 export default function Home({ user, setUser }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 1. Ao carregar a página, busca os produtos no Back
+  // 1. FUNÇÃO QUE GERA A URL ALEATÓRIA E DINÂMICA
+  function generateRandomHardwareImageUrl(id) {
+    const timestamp = Date.now(); // Gera um número único com o tempo atual
+    // Usamos o 'source.unsplash.com' para imagens aleatórias por pesquisa.
+    // 'id' garante que no mesmo F5 as imagens sejam diferentes entre os cards.
+    // 'timestamp' garante que a cada F5 a imagem mude.
+    return `https://source.unsplash.com/featured/400x300?computer,hardware,cpu&id=${id}&t=${timestamp}`;
+  }
+
   useEffect(() => {
     async function loadProducts() {
       try {
-        const response = await api.get('/products'); // Sua rota de produtos
-        setProducts(response.data);
+        const response = await api.get('/products');
+        
+        const formattedProducts = response.data.map(product => {
+          return {
+            ...product,
+            // 2. Aplica a imagem gerada agora para cada produto
+            display_image: product.image_url || generateRandomHardwareImageUrl(product.id)
+          };
+        });
+
+        setProducts(formattedProducts);
       } catch (err) {
-        console.error("Erro ao carregar produtos", err);
+        console.error("Erro ao carregar produtos:", err);
       } finally {
         setLoading(false);
       }
@@ -22,68 +38,83 @@ export default function Home({ user, setUser }) {
     loadProducts();
   }, []);
 
-  // 2. Função de Logout (Limpa o estado e o Back limpa o cookie)
   async function handleLogout() {
-    try {
-      // Opcional: Criar uma rota /logout no back que faz res.clearCookie('token')
-      await api.post('/logout'); 
-    } catch (err) {
-      console.log("Logout apenas local");
-    } finally {
-      setUser(null); // Volta para a tela de Login no App.jsx
-    }
+    try { await api.post('/logout'); } catch (err) {} finally { setUser(null); }
   }
 
-  if (loading) {
-    return <div style={styles.loading}>Carregando hardware de elite...</div>;
-  }
+  if (loading) return <div style={styles.loading}>Sincronizando Nexus...</div>;
 
   return (
     <div style={styles.container}>
-      {/* Header da Loja */}
       <header style={styles.header}>
-        <h1 style={styles.logo}>Nexus Store</h1>
+        <div style={styles.logoArea}>
+          <h1 style={styles.logo}>NEXUS</h1><span style={styles.dot}>.</span>
+        </div>
         <div style={styles.userArea}>
-          <span>Bem-vindo, <strong>{user?.name || 'Player'}</strong></span>
-          <button onClick={handleLogout} style={styles.logoutBtn}>Sair</button>
+          <div style={styles.userInfo}>
+            <span style={styles.userName}>{user?.name || 'ADMIN'}</span>
+          </div>
+          <button onClick={handleLogout} style={styles.logoutBtn}>LOGOUT</button>
         </div>
       </header>
 
-      {/* Grid de Produtos */}
-      <main style={styles.grid}>
-        {products.length > 0 ? (
-          products.map(product => (
-            <div key={product.id} style={styles.card}>
-              <img 
-                src={product.image_url || 'https://via.placeholder.com/150'} 
-                alt={product.name} 
-                style={styles.image}
-              />
-              <h3 style={styles.prodName}>{product.name}</h3>
-              <p style={styles.price}>R$ {product.price.toFixed(2)}</p>
-              <button style={styles.buyBtn}>Comprar</button>
-            </div>
-          ))
-        ) : (
-          <p>Nenhum produto encontrado no estoque.</p>
-        )}
+      <main style={styles.content}>
+        <div style={styles.titleWrapper}>
+          <h2 style={styles.sectionTitle}>ESTOQUE DISPONÍVEL</h2>
+          <div style={styles.line}></div>
+        </div>
+        
+        <div style={styles.grid}>
+          {products.map(product => (
+            <article key={product.id} style={styles.card}>
+              <div style={styles.imageContainer}>
+                <img 
+                  src={product.display_image} 
+                  alt={product.name} 
+                  style={styles.image}
+                  loading="lazy"
+                  // 3. Fallback estável se o Unsplash falhar
+                  onError={(e) => { 
+                    e.target.onerror = null; 
+                    e.target.src = `https://picsum.photos/seed/${product.id}/400/300`; 
+                  }}
+                />
+              </div>
+              <div style={styles.info}>
+                <h3 style={styles.name}>{product.name}</h3>
+                <div style={styles.priceContainer}>
+                  <span style={styles.currency}>R$</span>
+                  <span style={styles.price}>
+                    {product.price?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <button style={styles.buyBtn}>ADICIONAR AO SETUP</button>
+              </div>
+            </article>
+          ))}
+        </div>
       </main>
     </div>
   );
 }
 
-// Estilização Básica (Dark Mode)
 const styles = {
-  container: { minHeight: '100vh', backgroundColor: '#121214', color: '#e1e1e6', fontFamily: 'sans-serif' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px 40px', backgroundColor: '#202024', borderBottom: '1px solid #00b37e' },
-  logo: { color: '#00b37e', margin: 0 },
-  userArea: { display: 'flex', alignItems: 'center', gap: '20px' },
-  logoutBtn: { backgroundColor: 'transparent', color: '#f75a68', border: '1px solid #f75a68', padding: '5px 15px', borderRadius: '4px', cursor: 'pointer' },
-  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px', padding: '40px' },
-  card: { backgroundColor: '#202024', padding: '20px', borderRadius: '8px', textAlign: 'center', border: '1px solid #323238' },
-  image: { width: '100%', borderRadius: '4px', marginBottom: '10px' },
-  prodName: { fontSize: '18px', marginBottom: '10px' },
-  price: { color: '#00b37e', fontWeight: 'bold', fontSize: '20px', marginBottom: '15px' },
-  buyBtn: { width: '100%', padding: '10px', backgroundColor: '#00b37e', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: 'bold', cursor: 'pointer' },
-  loading: { height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#121214', color: '#00b37e' }
+  container: { minHeight: '100vh', backgroundColor: '#09090a', color: '#e1e1e6', fontFamily: "'Inter', sans-serif" },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 40px', height: '80px', backgroundColor: '#121214', borderBottom: '1px solid #29292e', position: 'sticky', top: 0, zIndex: 10 },
+  logoArea: { display: 'flex', alignItems: 'center' }, logo: { color: '#fff', letterSpacing: '4px', fontSize: '24px', fontWeight: '800', margin: 0 },
+  dot: { color: '#00b37e', fontSize: '24px', fontWeight: '800' },
+  userArea: { display: 'flex', alignItems: 'center', gap: '20px' }, userInfo: { display: 'flex', flexDirection: 'column', textAlign: 'right' },
+  userName: { fontSize: '14px', fontWeight: 'bold', color: '#00b37e' },
+  logoutBtn: { background: 'none', border: '1px solid #f75a68', color: '#f75a68', padding: '6px 15px', borderRadius: '4px', cursor: 'pointer', fontSize: '11px' },
+  content: { padding: '40px' }, titleWrapper: { marginBottom: '30px' }, sectionTitle: { fontSize: '12px', letterSpacing: '2px', color: '#fff', marginBottom: '8px' },
+  line: { width: '40px', height: '3px', backgroundColor: '#00b37e' },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px' },
+  card: { backgroundColor: '#121214', borderRadius: '12px', border: '1px solid #29292e', overflow: 'hidden' },
+  imageContainer: { width: '100%', height: '180px', backgroundColor: '#18181b' },
+  image: { width: '100%', height: '100%', objectFit: 'cover' },
+  info: { padding: '24px' }, name: { fontSize: '18px', fontWeight: '600', marginBottom: '15px', color: '#fff' },
+  priceContainer: { display: 'flex', alignItems: 'baseline', gap: '5px', marginBottom: '20px' },
+  currency: { color: '#00b37e', fontSize: '14px' }, price: { color: '#00b37e', fontSize: '26px', fontWeight: 'bold' },
+  buyBtn: { width: '100%', padding: '14px', backgroundColor: '#00b37e', border: 'none', borderRadius: '6px', color: '#fff', fontWeight: 'bold', cursor: 'pointer' },
+  loading: { height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#09090a', color: '#00b37e' }
 };

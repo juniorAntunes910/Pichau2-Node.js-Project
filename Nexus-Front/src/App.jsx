@@ -7,30 +7,35 @@ function App(){
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(()=>{//Pegando o cookie do navegador
+  useEffect(() => {
     api.get("/me")
     .then(response  => {
       setUser(response.data.user);
     })
-    .catch(() =>{
+    .catch(() => {
       setUser(null);
     })
-    .finally(()=>{
+    .finally(() => {
       setLoading(false);
     })
   }, [])
 
-  if(loading) return <div>Carregando...</div>
+  if(loading) return (
+    <div style={{ background: '#09090a', color: '#00b37e', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      Carregando sistema...
+    </div>
+  )
 
   return (
-    <div className="App">
+    /* Removi a classe "App" e usei um estilo para garantir que não haja bordas */
+    <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0 }}>
       {
         user ? (
-          <Home user={user} setUser ={setUser}/>
+          <Home user={user} setUser={setUser}/>
         ) : (
-          // No App.jsx
           <Login onLoginSuccess={(userData) => setUser(userData)} />
-        )}
+        )
+      }
     </div>
   );
 }
