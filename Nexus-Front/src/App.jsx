@@ -1,33 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from "react";
 import { api } from './services/api'
+import Login from './pages/login'
+import Home from './pages/home'
 
-function App() {
-  const [products, setProducts] = useState([]);
+function App(){
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    //Busca produtos da api
-    api.get('/products').then(response => {
-      setProducts(response.data);
-    });
-  }, []);
+  useEffect(()=>{//Pegando o cookie do navegador
+    api.get("/me")
+    .then(response  => {
+      setUser(response.data.user);
+    })
+    .catch(() =>{
+      setUser(null);
+    })
+    .finally(()=>{
+      setLoading(false);
+    })
+  }, [])
+
+  if(loading) return <div>Carregando...</div>
 
   return (
-    <div>
-      <h1>Nexus Store - Hardware</h1>
-      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr 1fr'}}>
-        {products.map(product => (
-          <div key={product.id} style={{border: '1px solid #ccc', margin: '10px', padding: '10px'}}>
-            <h3>{product.name}</h3>
-            <p>{product.description}</p>
-            <span>R${product.price}</span>
-            <br></br>
-            <button>Comprar</button>
-          </div>
-        ))}
-      </div>
+    <div className="App">
+      {
+        user ? (
+          <Home user={user} setUser ={setUser}/>
+        ) : (
+          // No App.jsx
+          <Login onLoginSuccess={(userData) => setUser(userData)} />
+        )}
     </div>
-  )
-
+  );
 }
 
 export default App;

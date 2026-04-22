@@ -29,13 +29,19 @@ const deleteProductController = new DeleteProductController();
 // --- Rotas Abertas ---
 router.post('/login', (req, res) => authenticateController.handle(req, res));
 router.post('/users', (req, res) => createUserController.handle(req, res));
-
+router.get('/products',  (req, res) =>  readProductController.handle(req, res));
+router.get("/me", ensuereAuthenticated, (req: any , res) => {
+  // O ensureAuthenticated lê o cookie, valida o JWT e coloca o ID em req.user_id
+  // Aqui você pode buscar os dados do usuário no banco se quiser
+  return res.json({ 
+    user: { id: req.user_id, name: "Usuário Logado" } 
+  });
+});
 // --- Rotas Protegidas (Precisa de Token) ---
 router.get('/users', ensuereAuthenticated, ensureAdmin,  (req, res) => readUsersController.handle(req, res));
 router.put('/users/:id', ensuereAuthenticated, ensureAdmin, (req, res) => updateUsersController.handle(req, res));
 router.delete('/users/:id', ensuereAuthenticated, ensureAdmin, (req, res) => deleUserController.handle(req, res));
 router.post('/products', ensuereAuthenticated, ensureAdmin, (req, res) => createProductController.handle(req, res));
-router.get('/products', ensuereAuthenticated, ensureAdmin, (req, res) =>  readProductController.handle(req, res));
 router.put('/products/:id', ensuereAuthenticated, ensureAdmin, (req, res) => updateProductController.handle(req, res)); 
 router.delete('/products/:id', ensuereAuthenticated, ensureAdmin, (req, res) => deleteProductController.handle(req, res))
 export { router }
