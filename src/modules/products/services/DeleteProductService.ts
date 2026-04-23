@@ -7,7 +7,7 @@ interface IProductDelete{
 
 export class DeleteproductService{
     async execute({id}: IProductDelete){
-        const existUser = prisma.product.findUnique({where: {id}});
+        const existUser = await prisma.product.findUnique({where: {id}});
         if(!existUser){
             throw new Error("Produto não existe")
         }

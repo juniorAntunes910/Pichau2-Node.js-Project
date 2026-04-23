@@ -1,43 +1,29 @@
-import { useState, useEffect } from "react";
-import { api } from './services/api'
-import Login from './pages/login'
-import Home from './pages/home'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
+import Login from "./pages/login"; // Verifique se o arquivo é login.jsx ou Login.jsx
+import Home from "./pages/home";
+import AdminProducts from "./pages/adminProducts";
 
-function App(){
+export default function App() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.get("/me")
-    .then(response  => {
-      setUser(response.data.user);
-    })
-    .catch(() => {
-      setUser(null);
-    })
-    .finally(() => {
-      setLoading(false);
-    })
-  }, [])
-
-  if(loading) return (
-    <div style={{ background: '#09090a', color: '#00b37e', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      Carregando sistema...
-    </div>
-  )
 
   return (
-    /* Removi a classe "App" e usei um estilo para garantir que não haja bordas */
-    <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0 }}>
-      {
-        user ? (
-          <Home user={user} setUser={setUser}/>
-        ) : (
-          <Login onLoginSuccess={(userData) => setUser(userData)} />
-        )
-      }
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login onLoginSuccess={setUser} />} />
+        
+        <Route 
+          path="/" 
+          element={user ? <Home user={user} /> : <Navigate to="/login" />} 
+        />
+
+        <Route 
+          path="/admin" 
+          element={
+            user?.role === 'ADMIN' ? <AdminProducts /> : <Navigate to="/" />
+          } 
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

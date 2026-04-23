@@ -6,18 +6,19 @@ interface IPayload {
 }
 
 export function ensuereAuthenticated(req: Request, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization; // Recebe o token
+  // 1. Tenta pegar o token do COOKIE primeiro, depois do HEADER
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
-  if (!authHeader) {
+  // 2. Se nenhum dos dois existir, aí sim dá erro
+  if (!token) {
     return res.status(401).json({ error: "Token is missing" });
   }
-//Separa eles 
-  const [, token] = authHeader.split(" ");
 
   try {
+    // 3. Valida o token (seja vindo de cookie ou header)
     const { sub } = verify(token, process.env.JWT_SECRET as string) as IPayload;
 
-    // Se o erro continuar aqui no terminal, use o Plano B abaixo:
+    // 4. Injeta o ID no request
     (req as any).user_id = sub; 
 
     return next();
